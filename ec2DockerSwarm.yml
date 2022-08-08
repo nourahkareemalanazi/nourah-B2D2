@@ -1,0 +1,177 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >
+  This Cloudformation Template creates five EC2 Instances and installs docker and docker-compose.
+  Docker Machines will run on Amazon Linux 2 with custom security group 
+  allowing SSH (22), HTTP (80) and TCP(2377, 8080) connections from anywhere.
+  User needs to select appropriate key name when launching the template.
+
+Parameters:
+  KeyPairName:
+    Description: Enter the name of your Key Pair for SSH connections.
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: nourah-key
+    ConstraintDescription: Must be one of the existing EC2 KeyPair
+  LatestUbuntuAmiId:
+    Type:  'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/canonical/ubuntu/server/focal/stable/current/amd64/hvm/ebs-gp2/ami-id'
+  InstanceType:
+    Description: WebServer EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues: [t2.nano, t2.micro, t2.small, t2.medium]
+    ConstraintDescription: must be a valid EC2 instance type.
+
+
+Resources:
+  DockerSwarmMachinesSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH and HTTP for Docker Machines
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 2377
+          ToPort: 2377
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+  DockerMachine1:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref 'LatestUbuntuAmiId'
+      InstanceType: !Ref 'InstanceType'
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds:
+        - !GetAtt DockerSwarmMachinesSecurityGroup.GroupId
+      Tags:                
+        -                        
+          Key: Name
+          Value: !Sub Docker Machine 1st of ${AWS::StackName}
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            # Install docker
+            wget https://gist.github.com/chandradeoarya/fed734058bd0c91684a6ff01699b5b77/raw/cf96c3ec6b02c691716a75430d71cda9305f5086/install-docker-and-compose-ubuntu.sh
+            chmod +x install-docker-and-compose-ubuntu.sh
+            ./install-docker-and-compose-ubuntu.sh
+  DockerMachine2:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref 'LatestUbuntuAmiId'
+      InstanceType: !Ref 'InstanceType'
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds:
+        - !GetAtt DockerSwarmMachinesSecurityGroup.GroupId
+      Tags:                
+        -                        
+          Key: Name
+          Value: !Sub Docker Machine 2nd of ${AWS::StackName} 
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            # Install docker
+            wget https://gist.github.com/chandradeoarya/fed734058bd0c91684a6ff01699b5b77/raw/cf96c3ec6b02c691716a75430d71cda9305f5086/install-docker-and-compose-ubuntu.sh
+            chmod +x install-docker-and-compose-ubuntu.sh
+            ./install-docker-and-compose-ubuntu.sh
+
+  DockerMachine3:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref 'LatestUbuntuAmiId'
+      InstanceType: !Ref 'InstanceType'
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds:
+        - !GetAtt DockerSwarmMachinesSecurityGroup.GroupId
+      Tags:                
+        -                        
+          Key: Name
+          Value: !Sub Docker Machine 3rd of ${AWS::StackName} 
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            # Install docker
+            wget https://gist.github.com/chandradeoarya/fed734058bd0c91684a6ff01699b5b77/raw/cf96c3ec6b02c691716a75430d71cda9305f5086/install-docker-and-compose-ubuntu.sh
+            chmod +x install-docker-and-compose-ubuntu.sh
+            ./install-docker-and-compose-ubuntu.sh
+
+  DockerMachine4:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref 'LatestUbuntuAmiId'
+      InstanceType: !Ref 'InstanceType'
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds:
+        - !GetAtt DockerSwarmMachinesSecurityGroup.GroupId
+      Tags:                
+        -                        
+          Key: Name
+          Value: !Sub Docker Machine 4th of ${AWS::StackName} 
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            # Install docker
+            wget https://gist.github.com/chandradeoarya/fed734058bd0c91684a6ff01699b5b77/raw/cf96c3ec6b02c691716a75430d71cda9305f5086/install-docker-and-compose-ubuntu.sh
+            chmod +x install-docker-and-compose-ubuntu.sh
+            ./install-docker-and-compose-ubuntu.sh
+
+  DockerMachine5:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref 'LatestUbuntuAmiId'
+      InstanceType: !Ref 'InstanceType'
+      KeyName: !Ref KeyPairName
+      SecurityGroupIds:
+        - !GetAtt DockerSwarmMachinesSecurityGroup.GroupId
+      Tags:                
+        -                        
+          Key: Name
+          Value: !Sub Docker Machine 5th of ${AWS::StackName} 
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            # Install docker
+            wget https://gist.github.com/chandradeoarya/fed734058bd0c91684a6ff01699b5b77/raw/cf96c3ec6b02c691716a75430d71cda9305f5086/install-docker-and-compose-ubuntu.sh
+            chmod +x install-docker-and-compose-ubuntu.sh
+            ./install-docker-and-compose-ubuntu.sh
+
+Outputs:
+  1stDockerMachineDNSName:
+    Description: Docker Machine 1st DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt DockerMachine1.PublicDnsName
+  2ndDockerMachineDNSName:
+    Description: Docker Machine 2nd DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt DockerMachine2.PublicDnsName
+  3rdDockerMachineDNSName:
+    Description: Docker Machine 3rd DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt DockerMachine3.PublicDnsName
+  4thDockerMachineDNSName:
+    Description: Docker Machine 4th DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt DockerMachine4.PublicDnsName
+  5thDockerMachineDNSName:
+    Description: Docker Machine 5th DNS Name
+    Value: !Sub 
+      - ${PublicAddress}
+      - PublicAddress: !GetAtt DockerMachine5.PublicDnsName
