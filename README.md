@@ -1,5 +1,4 @@
-# nourah-B2D2
----
+
 # nourah alanazi
 Software and DevOps engineer, Cloud architect, Instructor.
 
