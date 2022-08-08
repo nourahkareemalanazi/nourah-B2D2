@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create a EC2 under a VPC
+Resources:
+  SampleVpc:
+    Type: AWS::EC2::VPC
+    Description: Section 2 Sample VPC definition
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        -
+          Key: Name
+          Value: Section2SampleVpc
+  SampleSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.0.0/24
+      MapPublicIpOnLaunch: true
+      VpcId: !Ref SampleVpc
+  SampleRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref SampleVpc
+  SampleInternetGateway:
+    Type: AWS::EC2::InternetGateway
+  SampleGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref SampleVpc
+      InternetGatewayId: !Ref SampleInternetGateway
+  InternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - SampleGatewayAttachment
+    Properties:
+      RouteTableId: !Ref SampleRouteTable
+      GatewayId: !Ref SampleInternetGateway
+      DestinationCidrBlock: 0.0.0.0/0
+  SampleSubnetRouteTableAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SampleRouteTable
+      SubnetId: !Ref SampleSubnet
+  SampleInstance:
+    Type: AWS::EC2::Instance
+    DependsOn:
+      - InternetRoute
+      - SampleSubnetRouteTableAssoc
+    Properties:
+      InstanceType: t2.micro
+      SubnetId: !Ref SampleSubnet
+      ImageId: ami-09d56f8956ab235b3
+      SecurityGroupIds:
+        - !Ref SampleSecurityGroup
+  SampleSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Sample security group
+      VpcId: !Ref SampleVpc
+      SecurityGroupIngress:
+        -
+          CidrIp: 0.0.0.0/0
+          IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
